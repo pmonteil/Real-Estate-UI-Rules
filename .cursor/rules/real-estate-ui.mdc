@@ -364,7 +364,17 @@ box-shadow: 0 0 0 3px rgba(61, 100, 237, 0.15);
 </div>
 ```
 
-### 8.4 Section de Configuration
+### 8.4 KPI & Data Visualization
+
+Pour les chiffres clés, dashboards et graphiques, consulter la spec dédiée : `.cursor/rules/real-estate-ui-docs/app-kpi-dataviz.md`.
+
+**Règles essentielles :**
+- Chiffres KPI toujours en couleur **neutre** (`--text-headings`), jamais colorés.
+- Sparklines et graphiques en **orange Septeo** (`--brand-orange-400`) avec dégradé fondu, pas de multicolore.
+- Cartes KPI avec `border`, jamais de `box-shadow`.
+- Toujours ajouter un micro-graphique (sparkline) ou une icône à côté du chiffre pour un rendu visuel moderne.
+
+### 8.5 Section de Configuration
 
 ```scss
 .config-section {
