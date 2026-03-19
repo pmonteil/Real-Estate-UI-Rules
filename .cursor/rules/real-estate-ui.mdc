@@ -1,0 +1,497 @@
+---
+description: 'Guide complet du Design System Real Estate UI — tokens, composants, patterns, conventions et directives IA'
+alwaysApply: true
+---
+
+# Design System Real Estate UI — Guide Complet
+
+> Ce document est la référence unique pour toute génération d'interface conforme au DS **Septeo Real Estate UI**.
+
+---
+
+## 1. Principes Fondamentaux
+
+### Philosophie
+
+- **Composants DS en priorité** : TOUJOURS utiliser les composants `Ui*` avant tout élément HTML natif.
+- **Tokens avant valeurs en dur** : TOUJOURS référencer une variable CSS plutôt qu'une couleur ou taille en dur.
+- **Cohérence** : Tous les écrans partagent les mêmes patterns visuels.
+- **Accessibilité** : Labels associés aux inputs, contrastes suffisants, états focus visibles.
+
+### Stack Technique
+
+- **Framework** : Vue 3 (Composition API, `<script setup>`)
+- **UI Library** : `septeo-real-estate-ui` (composants préfixés `Ui`)
+- **Icônes** : `@tabler/icons-vue`
+- **Styles** : SCSS scoped, variables CSS custom
+- **State** : `ref`, `reactive`, `computed`
+
+### Checklist avant de créer un élément UI
+
+1. **Existe-t-il un composant Real Estate UI pour cela ?**
+2. **Puis-je adapter un composant existant plutôt que du custom ?**
+3. **Ai-je vérifié la documentation du composant ?** (voir `.cursor/rules/real-estate-ui-docs/`)
+
+---
+
+## 2. Directives IA — Documentation des Composants
+
+### Règle 1 — Consulter la doc avant d'utiliser un composant
+
+Avant d'utiliser un composant `Ui*`, **lire son fichier** dans `.cursor/rules/real-estate-ui-docs/ui-<nom>.md`.
+
+### Règle 2 — Créer la doc pour tout nouveau composant
+
+Quand un **nouveau composant `Ui*` est créé** dans le DS, créer immédiatement son fichier `.md` dans `.cursor/rules/real-estate-ui-docs/` avec : props, slots, événements, exemples, notes d'intégration.
+
+### Règle 3 — Mettre à jour la doc si un composant change
+
+Si les props, slots ou événements d'un composant existant changent, **mettre à jour son `.md`**.
+
+---
+
+## 3. Import des Composants
+
+```typescript
+import {
+  UiButton, UiInput, UiLabel, UiTextarea, UiSwitch,
+  UiSelect, UiCheckbox, UiRadio,
+  UiTable, UiTableCell,
+  UiBadge, UiPill, UiTag, UiAvatar,
+  UiFilter, UiContainersHeader,
+  UiTab, UiTabDark,
+  UiMenuOffice, UiTopbarOffice, UiBreadcrumb,
+  UiSnackbar, UiPopup, UiPopupIcon,
+  UiToggle, UiLink, UiDynamicInput, UiInputSuffix,
+} from 'septeo-real-estate-ui';
+```
+
+### Icônes (`@tabler/icons-vue`)
+
+```vue
+<IconSettings :size="20" :stroke-width="1.5" />
+```
+
+---
+
+## 4. Règles d'Utilisation
+
+### À ÉVITER
+
+```vue
+<button class="custom-btn" @click="handleClick">Sauvegarder</button>
+<input type="text" class="custom-input" v-model="value" />
+<label class="custom-label">Mon label</label>
+```
+
+### À FAIRE
+
+```vue
+<UiButton label="Sauvegarder" variant="primary" size="md" @click="handleClick" />
+<UiInput v-model="value" placeholder="Entrez une valeur" />
+<UiLabel label="Mon label" />
+```
+
+### Personnalisation d'un composant DS
+
+1. **D'abord** : Utiliser les props et variants disponibles
+2. **Ensuite** : Utiliser les slots si disponibles
+3. **En dernier recours** : `:deep()` pour le style, JAMAIS recréer from scratch
+
+### Exceptions autorisées
+
+- Composants métier très spécifiques (ex: widget d'estimation)
+- Éléments purement structurels (`<div>`, `<section>` pour le layout)
+- Composants tiers nécessaires (ex: bibliothèques de graphiques)
+
+---
+
+## 5. Design Tokens
+
+### 5.1 Couleurs de Marque
+
+```css
+/* Grey */
+--brand-grey-10 → --brand-grey-950
+
+/* Blue (Primary) */
+--brand-blue-10 → --brand-blue-950
+/* Ex: --brand-blue-500: #3d64ed */
+
+/* Orange (Accent) */
+--brand-orange-10 → --brand-orange-950
+/* Ex: --brand-orange-400: #ff6136 */
+
+/* Green (Success) */
+--brand-green-10 → --brand-green-950
+
+/* Red (Error) */
+--brand-red-10 → --brand-red-950
+
+/* Yellow (Warning) */
+--brand-yellow-10 → --brand-yellow-950
+
+/* Purple (AI) */
+--brand-purple-10 → --brand-purple-950
+
+/* Foundation */
+--brand-foundation-black: #000000;
+--brand-foundation-white: #ffffff;
+```
+
+### 5.2 Alias Sémantiques (toujours préférer ceux-ci)
+
+```css
+--alias-primary-default: var(--brand-blue-500);    /* Actions principales */
+--alias-accent-default: var(--brand-orange-400);    /* Accent, notifications */
+--alias-error-default: var(--brand-red-500);        /* Erreurs */
+--alias-success-default: var(--brand-green-400);    /* Succès */
+--alias-neutral-default: var(--brand-grey-400);     /* Neutre */
+--alias-warning-default: var(--brand-yellow-500);   /* Avertissements */
+--alias-ai-default: var(--brand-purple-500);        /* IA */
+--alias-neutral-white: #ffffff;
+```
+
+### 5.3 Tokens Contextuels
+
+#### Texte
+
+```css
+--text-headings: var(--alias-neutral-black);
+--text-body: var(--alias-neutral-900);
+--text-body-secondary: var(--alias-neutral-default);
+--text-action: var(--alias-primary-default);
+--text-on-action: var(--alias-neutral-white);
+--text-error: var(--alias-error-default);
+--text-success: var(--alias-success-default);
+--text-placeholder: var(--alias-neutral-600);
+--text-accent: var(--alias-accent-default);
+```
+
+#### Icônes
+
+```css
+--icon-default: var(--alias-neutral-900);
+--icon-secondary: var(--alias-neutral-500);
+--icon-action: var(--alias-primary-default);
+--icon-on-action: var(--alias-neutral-white);
+--icon-accent: var(--alias-accent-default);
+```
+
+#### Surfaces
+
+```css
+--surface-default: var(--alias-neutral-white);
+--surface-default-bis: var(--alias-neutral-50);
+--surface-field: var(--alias-neutral-10);
+--surface-action: var(--alias-primary-default);
+--surface-action-hover: var(--alias-primary-600);
+--surface-light-action: var(--alias-primary-50);
+--surface-neutral-hover: var(--alias-neutral-75);
+--surface-accent: var(--alias-accent-default);
+--surface-light-accent: var(--alias-accent-50);
+```
+
+#### Bordures
+
+```css
+--border-default: var(--alias-neutral-100);
+--border-default-light: var(--alias-neutral-75);
+--border-action: var(--alias-primary-default);
+--border-focus: var(--alias-primary-default);
+--border-error: var(--alias-error-default);
+--border-action-accent: var(--alias-accent-default);
+
+--alias-border-width-sm: 1px;
+--alias-border-radius-sm: 1px;
+--alias-border-radius-md: 4px;
+--alias-border-radius-lg: 8px;
+```
+
+### 5.4 Typographie
+
+```css
+--font-family-headings: 'Inter', sans-serif;
+--font-family-body: 'Inter', sans-serif;
+
+--font-weight-regular: 400;
+--font-weight-medium: 500;
+--font-weight-semi-bold: 600;
+--font-weight-bold: 700;
+
+/* Heading 1 — Display, usage rare (ex: titre hero "Modelo InTouch") */
+--h1-font-size: 40px;  --h1-line-height: 50px;  /* Bold */
+
+/* Heading 2 — Titre de page (ex: "Estimation" dans le header) */
+--h2-font-size: 20px;  --h2-line-height: 22px;  /* Bold */
+
+/* Heading 3 — Titre de section (ex: titre d'accordéon avec icône) */
+--h3-font-size: 16px;  --h3-line-height: 20px;  /* Semi Bold */
+
+/* Heading 4 — Sous-titre de section */
+--h4-font-size: 14px;  --h4-line-height: 18px;  /* Semi Bold */
+
+/* Body */
+--body-font-size: 14px; --body-line-height: 14px; /* Regular */
+
+/* Link — identique à Body, avec underline */
+
+/* Body small */
+--body-small-font-size: 12px; --body-small-line-height: 12px; /* Regular */
+
+/* Caption */
+--caption-font-size: 10px; --caption-line-height: 10px; /* Regular */
+
+/* Mentions */
+--mentions-font-size: 10px; --mentions-line-height: 10px; /* Regular */
+```
+
+### 5.5 Espacement
+
+```css
+--brand-scale-0: 0px;   --brand-scale-1: 1px;   --brand-scale-2: 2px;
+--brand-scale-4: 4px;    --brand-scale-8: 8px;   --brand-scale-12: 12px;
+--brand-scale-16: 16px;  --brand-scale-20: 20px; --brand-scale-24: 24px;
+--brand-scale-28: 28px;  --brand-scale-32: 32px;
+```
+
+### 5.6 Tokens de Composants
+
+```css
+/* Champs */
+--field-padding-x: 0.875rem;
+--field-padding-y: 0.625rem;
+--field-border-radius: 8px;
+
+/* Boutons */
+--button-default-padding-y: var(--brand-scale-8);
+--button-default-padding-x: var(--brand-scale-8);
+--button-xs-padding-y: var(--brand-scale-4);
+--button-xs-padding-x: var(--brand-scale-4);
+```
+
+---
+
+## 6. Ombres et Élévation
+
+```scss
+/* Carte standard */
+box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+
+/* Carte élevée (drawer, modal) */
+box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+
+/* Barre de sauvegarde */
+box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.08);
+
+/* Focus ring */
+box-shadow: 0 0 0 3px rgba(61, 100, 237, 0.15);
+```
+
+---
+
+## 7. Z-Index Convention
+
+```
+2001 - Drawer panel
+2000 - Drawer overlay
+1200 - Global Topbar
+1180 - Launcher Menu
+1100 - Sidebar Menu
+ 100 - Sticky headers
+  50 - Page sub-headers
+```
+
+---
+
+## 8. Patterns UX
+
+### 8.1 Layout de Page
+
+```
+┌─────────────────────────────────────────────┐
+│ Global Topbar (fixed, z-1200, h: 44px)      │
+├──────────┬──────────────────────────────────┤
+│ Sidebar  │  Page Header (sticky)            │
+│ (fixed)  │──────────────────────────────────│
+│ w: 206px │  Content (padding: 1.5rem)       │
+└──────────┴──────────────────────────────────┘
+```
+
+### 8.2 Header de Page — UiContainersHeader
+
+```vue
+<UiContainersHeader
+  title="Titre de la page"
+  @back="goBack"
+>
+  <template #tabs>
+    <CachedUiTab v-model="activeTab" :tabs="tabs" />
+  </template>
+  <template #actions>
+    <UiButton label="Action" variant="primary" />
+  </template>
+</UiContainersHeader>
+```
+
+### 8.3 Filtres — UiFilter
+
+```vue
+<div class="filter-dropdown" @click.stop>
+  <UiFilter
+    label="Statut"
+    icon="circle-check"
+    :active="!!filters.statut"
+    :show-badge="false"
+    @click="toggleDropdown('statut')"
+  />
+  <Transition name="dropdown">
+    <div v-if="openDropdown === 'statut'" class="filter-menu">
+      <!-- Options -->
+    </div>
+  </Transition>
+</div>
+```
+
+### 8.4 Section de Configuration
+
+```scss
+.config-section {
+  background: var(--surface-default);
+  border: 1px solid var(--border-default-light);
+  border-radius: 12px;
+}
+.config-section__title {
+  padding: 1rem 1.25rem;
+  font-size: var(--h3-font-size);
+  font-weight: var(--font-weight-semi-bold);
+  background: var(--surface-default-bis);
+  border-bottom: 1px solid var(--border-default-light);
+}
+.config-section__body {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+```
+
+### 8.5 Drawer (Panneau Latéral)
+
+```scss
+.drawer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 2000;
+}
+.drawer {
+  position: fixed;
+  top: 0; right: 0; bottom: 0;
+  width: 560px;
+  background: var(--surface-default);
+  box-shadow: -8px 0 32px rgba(0, 0, 0, 0.15);
+  z-index: 2001;
+  display: flex;
+  flex-direction: column;
+}
+```
+
+### 8.6 Barre de Sauvegarde Animée
+
+```vue
+<Transition name="save-bar">
+  <div v-if="isDirty" class="save-bar">
+    <span>Modifications non enregistrées</span>
+    <div class="save-bar__buttons">
+      <UiButton label="Annuler" variant="secondary" @click="reset" />
+      <UiButton label="Sauvegarder" variant="primary" @click="save" />
+    </div>
+  </div>
+</Transition>
+```
+
+---
+
+## 9. Transitions et Animations
+
+```scss
+/* Standard */
+transition: all 0.2s ease;
+
+/* Slide up */
+@keyframes slideUp {
+  from { transform: translateY(100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* Fade in up */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+```
+
+---
+
+## 10. Responsive
+
+```scss
+@media (max-width: 600px) { /* Mobile */ }
+@media (max-width: 900px) { /* Tablette */ }
+@media (max-width: 1200px) { /* Medium */ }
+```
+
+---
+
+## 11. Conventions de Code
+
+### Nommage CSS (BEM)
+
+```scss
+.component { }
+.component__element { }
+.component__element--modifier { }
+```
+
+### Structure Vue
+
+```vue
+<template><!-- Template --></template>
+
+<script setup lang="ts">
+import { ref, computed } from 'vue';
+import { UiButton } from 'septeo-real-estate-ui';
+import { IconSettings } from '@tabler/icons-vue';
+
+// Props & Emits
+// State
+// Computed
+// Methods
+</script>
+
+<style lang="scss" scoped>
+/* Styles */
+</style>
+```
+
+### Interdictions
+
+- Jamais `<button>` natif si `UiButton` suffit
+- Jamais `<input>` natif si `UiInput` suffit
+- Jamais de couleur hex en dur si un token existe
+- Jamais `!important` sauf via `:deep()` sur un composant tiers
+
+---
+
+## 12. Checklist de Vérification
+
+- [ ] Composants DS utilisés quand disponibles
+- [ ] Couleurs via tokens CSS
+- [ ] Icônes `@tabler/icons-vue`
+- [ ] Typographie via tailles définies
+- [ ] Border-radius cohérents (6-8px champs, 10-12px cartes)
+- [ ] Ombres conformes à la convention d'élévation
+- [ ] Header sticky en place (UiContainersHeader)
+- [ ] Responsive géré
+- [ ] États hover/focus/disabled définis

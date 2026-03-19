@@ -1,0 +1,47 @@
+---
+description: Pattern de gestion des rôles Admin/Utilisateur pour différencier les vues
+alwaysApply: true
+---
+
+# Gestion des rôles Admin / Utilisateur
+
+## Store global
+
+Le rôle courant est géré par `src/stores/userRoleStore.ts`. Utiliser le composable `useUserRole()` :
+
+```typescript
+import { useUserRole } from '../stores/userRoleStore';
+const { role, isAdmin, isUser, toggleRole } = useUserRole();
+```
+
+## Switch de rôle
+
+Un bouton de switch est présent dans `MainLayout.vue`, positionné au-dessus du profil utilisateur dans le menu latéral. Il permet de basculer entre :
+- **Admin** (Philippe Martin, Administrateur) — vue par défaut
+- **Utilisateur** (Sophie Laurent, Agent commercial)
+
+## Convention de développement
+
+- **Par défaut**, toutes les fonctionnalités sont construites pour la vue Admin.
+- Quand l'utilisateur précise qu'une fonctionnalité est différente pour un utilisateur lambda, utiliser `v-if="isAdmin"` / `v-if="isUser"` pour conditionner l'affichage.
+- Les éléments admin-only (ex: bouton "Imposer à tous les utilisateurs", configuration globale d'identité) doivent être masqués en mode utilisateur.
+- Les éléments verrouillés par l'admin (ex: header/footer dans le builder) restent visibles mais non modifiables en mode utilisateur.
+
+## Exemples
+
+```vue
+<!-- Élément visible uniquement pour les admins -->
+<div v-if="isAdmin" class="admin-only-section">...</div>
+
+<!-- Contenu différent selon le rôle -->
+<span v-if="isAdmin">Gérer les préréglages</span>
+<span v-else>Voir les préréglages (lecture seule)</span>
+
+<!-- Désactiver une action pour les utilisateurs -->
+<UiButton :disabled="isUser" label="Modifier" />
+```
+
+## Fichiers clés
+
+- `src/stores/userRoleStore.ts` — Store du rôle (ref réactive globale)
+- `src/layouts/MainLayout.vue` — Switch visuel dans le menu latéral
