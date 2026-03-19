@@ -110,6 +110,19 @@ const breadcrumb = computed(() => {
 ## Notes d'intégration
 
 - Hauteur fixe : 44px. Fond `#2E3862` (aligné avec le menu Office).
+- **Position fixed obligatoire** : la topbar est en `position: fixed; top: 0; left: 0; right: 0; z-index: 1200;`. Elle **ne scroll pas** — elle reste toujours visible tout en haut de l'écran.
+
+```scss
+.topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 44px;
+  z-index: 1200;
+}
+```
+
 - Le breadcrumb intégré n’utilise **pas** le composant `UiBreadcrumb` séparé — c’est une implémentation interne propre à la topbar.
 - Lueurs animées (glow) décoratives comme sur `UiMenuOffice`.
 - Si `notificationCount > 99`, le badge affiche `"99+"`.

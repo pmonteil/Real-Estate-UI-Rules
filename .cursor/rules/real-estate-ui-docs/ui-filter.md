@@ -161,6 +161,7 @@ function handleFilterClick(key: string, value: string) {
 
 ## Bonnes pratiques
 
+- **La dropdown s'ouvre toujours en dessous du filtre** (`top: calc(100% + 4px)`). Ne jamais ouvrir la dropdown au-dessus, à gauche ou à droite du bouton filtre.
 - Toujours envelopper le UiFilter et le menu dans un `div` avec `@click.stop` pour éviter la fermeture lors du clic sur le filtre.
 - Utiliser `openDropdown` pour gérer quel menu est ouvert (un seul à la fois en général).
 - Mettre `:active="!!filters.xxx"` pour indiquer qu’un filtre est appliqué.
@@ -168,6 +169,8 @@ function handleFilterClick(key: string, value: string) {
 - Utiliser `size="xs"` sur les barres de filtres en mode compact (responsive).
 
 ## À ne pas faire
+
+- **Ne jamais ouvrir la dropdown ailleurs qu'en dessous** du bouton filtre.
 
 - Ne pas s’attendre à un menu déroulant intégré : UiFilter est uniquement un bouton déclencheur.
 - Éviter d’oublier `@click.stop` sur le wrapper, sinon les clics peuvent se propager et fermer le menu.

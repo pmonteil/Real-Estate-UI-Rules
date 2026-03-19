@@ -17,6 +17,8 @@ alwaysApply: true
 - **Tokens avant valeurs en dur** : TOUJOURS référencer une variable CSS plutôt qu'une couleur ou taille en dur.
 - **Cohérence** : Tous les écrans partagent les mêmes patterns visuels.
 - **Accessibilité** : Labels associés aux inputs, contrastes suffisants, états focus visibles.
+- **Vraies photos, jamais de placeholders** : Quand une page contient des photos (biens immobiliers, avatars, galeries…), toujours insérer de **vraies images** (via URL Unsplash, picsum.photos ou images métier). Ne jamais laisser de placeholder gris, d'icône générique ou de texte « Image ».
+- **Ordre des boutons** : Dans toute zone d'actions (barre de sauvegarde, modale, formulaire, footer), le bouton **négatif/annulation/danger est à gauche** et le bouton **positif/validation est à droite**. Si l'action est destructive ou dangereuse, utiliser la variante `error` du bouton.
 
 ### Stack Technique
 
@@ -310,13 +312,22 @@ box-shadow: 0 0 0 3px rgba(61, 100, 237, 0.15);
 
 ```
 ┌─────────────────────────────────────────────┐
-│ Global Topbar (fixed, z-1200, h: 44px)      │
+│ Global Topbar (fixed, z-1200, h: 44px)      │  ← Ne scroll pas
 ├──────────┬──────────────────────────────────┤
-│ Sidebar  │  Page Header (sticky)            │
+│ Sidebar  │  Page Header (sticky, z-50)      │  ← Ne scroll pas
 │ (fixed)  │──────────────────────────────────│
 │ w: 206px │  Content (padding: 1.5rem)       │
+│ Ne       │  max-width: 1400px centré        │
+│ scroll   │──────────────────────────────────│
+│ pas      │  [Save bar = 100% du contenu]    │  ← Pas sous le sidebar
 └──────────┴──────────────────────────────────┘
 ```
+
+**Éléments fixes (ne scrollent pas avec la page) :**
+- **Topbar** (`UiTopbarOffice`) : `position: fixed; top: 0; z-index: 1200;` — toujours visible.
+- **Menu latéral** (`UiMenuOffice`) : `position: fixed; left: 0; z-index: 1100;` — ne scroll jamais.
+- **Header de page** (`UiContainersHeader`) : `position: sticky; top: 44px; z-index: 50;` — reste fixe sous la topbar au scroll.
+- **Barre de sauvegarde** : positionnée en `fixed` en bas, mais sa largeur couvre uniquement la **zone de contenu** (à droite du menu latéral), pas toute la fenêtre.
 
 ### 8.2 Header de Page — UiContainersHeader
 
@@ -362,10 +373,10 @@ box-shadow: 0 0 0 3px rgba(61, 100, 237, 0.15);
   border-radius: 12px;
 }
 .config-section__title {
-  padding: 1rem 1.25rem;
+  padding: 0.5rem 1.25rem;
   font-size: var(--h3-font-size);
   font-weight: var(--font-weight-semi-bold);
-  background: var(--surface-default-bis);
+  background: var(--surface-default); // Toujours fond blanc, jamais de gris
   border-bottom: 1px solid var(--border-default-light);
 }
 .config-section__body {
@@ -399,6 +410,8 @@ box-shadow: 0 0 0 3px rgba(61, 100, 237, 0.15);
 
 ### 8.6 Barre de Sauvegarde Animée
 
+La barre de sauvegarde doit s'étirer sur **100% de la largeur du contenu uniquement** — elle ne doit pas couvrir le menu latéral. Utiliser `left` égal à la largeur du sidebar et `right: 0`.
+
 ```vue
 <Transition name="save-bar">
   <div v-if="isDirty" class="save-bar">
@@ -409,6 +422,17 @@ box-shadow: 0 0 0 3px rgba(61, 100, 237, 0.15);
     </div>
   </div>
 </Transition>
+```
+
+```scss
+.save-bar {
+  position: fixed;
+  bottom: 0;
+  left: 206px;  // Largeur du sidebar déplié (60px si plié)
+  right: 0;
+  z-index: 100;
+  // ...
+}
 ```
 
 ---

@@ -111,6 +111,18 @@ const tabs = [
 
 ## Bonnes pratiques
 
+- **Toujours mettre une icône** sur chaque tab. L'icône doit être représentative du contenu de l'onglet (ex: `mail` pour les emails, `chart-line` pour les statistiques, `robot` pour les automatisations). Un onglet sans icône est interdit.
+- **Toujours ajouter un badge `quantity`** quand l'onglet représente une collection dénombrable (liste d'éléments, résultats, items). Utiliser `badge: count` sur la définition du tab pour afficher le nombre d'éléments dans chaque onglet.
+
+```vue
+// Bon : chaque tab a une icône + un badge quantity quand pertinent
+const tabs = [
+  { value: 'biens', label: 'Biens immobiliers', icon: 'building', badge: 24 },
+  { value: 'prospects', label: 'Prospects', icon: 'users', badge: 12 },
+  { value: 'statistiques', label: 'Statistiques', icon: 'chart-line' },
+];
+```
+
 - Utiliser `CachedUiTab` pour les headers de page afin de profiter du cache d'icônes et d'éviter le flicker au changement d'onglet.
 - Placer les onglets dans le slot `#tabs` de `UiContainersHeader` pour une navigation de page cohérente.
 - Utiliser des `value` stables (ex: `'suivi'`, `'statistiques'`) pour synchroniser avec la navigation ou l'état global (ex: stores).
@@ -118,9 +130,11 @@ const tabs = [
 
 ## À ne pas faire
 
+- **Ne jamais créer un onglet sans icône.** Chaque tab doit avoir une icône représentative.
 - Ne pas utiliser des icônes non supportées par le cache dans `CachedUiTab` sans les ajouter au cache local.
 - Ne pas utiliser `UiTab` pour la navigation latérale — préférer `UiMenuOffice`.
 - Ne pas oublier de lier `modelValue` à un état réactif (ref/computed) pour que la sélection soit persistée.
+- Ne pas oublier les badges quantity quand l'onglet contient une liste dénombrable.
 
 ## Notes d'intégration
 

@@ -1,6 +1,20 @@
 # Layouts et conventions d'application
 
-> Conventions de construction des pages de l'application. Ces règles s'appliquent au **conteneur de contenu** (tout ce qui est sous la topbar et à droite du menu latéral). La topbar et le menu ne sont pas concernés.
+> Conventions de construction des pages de l'application.
+
+---
+
+## 0. Éléments fixes (ne scrollent pas)
+
+Les éléments suivants sont **fixes** et ne bougent jamais lors du scroll de la page :
+
+| Élément | Position | Détails |
+|---------|----------|---------|
+| **Topbar** (`UiTopbarOffice`) | `position: fixed; top: 0; left: 0; right: 0;` | `z-index: 1200`, hauteur 44px. Toujours visible en haut. |
+| **Menu latéral** (`UiMenuOffice`) | `position: fixed; top: 44px; left: 0; bottom: 0;` | `z-index: 1100`, largeur 206px (60px plié). Ne scroll jamais avec la page. |
+| **Header de page** (`UiContainersHeader`) | `position: sticky; top: 44px;` | `z-index: 50`. Reste collé sous la topbar au scroll. Son contenu interne respecte le `max-width: 1400px`. |
+
+La zone de contenu scrollable est celle à droite du menu et sous le header.
 
 ---
 
@@ -8,7 +22,7 @@
 
 ### Max-width
 
-Toute page doit avoir un conteneur principal limité à **`max-width: 1400px`** centré horizontalement, sauf exception justifiée (builder plein écran, page avec sidebar de configuration).
+Toute page doit avoir un conteneur principal limité à **`max-width: 1400px`** centré horizontalement, sauf exception justifiée (builder plein écran, page avec sidebar de configuration). Cette contrainte s'applique aussi au **contenu interne du `UiContainersHeader`** (voir sa doc).
 
 ```scss
 .page-container {
@@ -95,7 +109,7 @@ border-bottom: 1px solid var(--border-default-light);
 ### Fond des sections
 
 - **Page** : `var(--alias-neutral-white)` — fond blanc.
-- **Sections alternées** : `var(--surface-default-bis)` — gris très léger, pour le fond d'un titre de section/accordéon.
+- **Titres de section** : `var(--surface-default)` — toujours fond blanc. Ne jamais utiliser de fond gris sur les titres de section.
 - **Champs de formulaire** : `var(--surface-field)`.
 - Ne pas utiliser de gris franc comme fond de page.
 
@@ -198,9 +212,11 @@ Respecter strictement la hiérarchie du Design System (valeurs Figma).
 │                                                   │
 └───────────────────────────────────────────────────┘
 
-┌─ Barre de sauvegarde (sticky bottom) ────────────┐
+┌─ Barre de sauvegarde (fixed bottom, 100% du contenu) ──┐
 │  "Modifications non enregistrées"    [Annuler] [Sauvegarder] │
-└──────────────────────────────────────────────────┘
+└────────────────────────────────────────────────────────┘
+⚠ La barre de sauvegarde s'étire sur 100% de la zone de contenu
+  uniquement — elle ne doit PAS couvrir le menu latéral.
 ```
 
 ### 5.3 Page avec stepper (wizard)
@@ -237,8 +253,8 @@ Chaque section à l'intérieur d'une page doit avoir un titre **H3** accompagné
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 1rem 1.25rem;
-  background: var(--surface-default-bis);
+  padding: 0.5rem 1.25rem;
+  background: var(--surface-default); // Toujours fond blanc, jamais de gris
   border-bottom: 1px solid var(--border-default-light);
 }
 
@@ -373,4 +389,5 @@ Les cartes utilisent `border: 1px solid var(--border-default-light)` et `border-
 | `max-width` > 1400px sur page standard | `1400px` max, sauf builder/éditeur |
 | Titre de section sans icône | Toujours ajouter une icône Tabler |
 | Sections désalignées du header | Même padding horizontal partout |
-| Fond gris foncé sur les pages | `var(--alias-neutral-white)` ou `var(--surface-default-bis)` |
+| Fond gris sur les titres de section | `var(--surface-default)` — toujours blanc |
+| Fond gris foncé sur les pages | `var(--alias-neutral-white)` uniquement |

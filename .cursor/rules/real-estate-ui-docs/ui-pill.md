@@ -68,15 +68,25 @@ const formattedRows = leads.map(lead => ({
 
 ## Bonnes pratiques
 
-- Choisir une couleur sémantique : `green` pour succès/validé, `red` pour erreur/rejeté, `blue` pour info/en cours, `orange` pour attention, `grey` pour neutre/archivé, `purple` pour premium/IA.
-- Associer une icône uniquement si elle clarifie le statut.
+- **Toujours choisir la couleur en fonction du sens sémantique du statut :**
+
+| Couleur | Signification | Exemples |
+|---------|--------------|----------|
+| `green` | Succès, validé, actif, positif | Validé, Actif, Publié, Effectuée, En ligne, Accepté |
+| `red` | Erreur, rejeté, négatif, perdu | Rejeté, Échoué, Erreur, Annulé, Perdu, Supprimé |
+| `blue` | En cours, info, neutre actif | En cours, Planifié, En traitement, En révision |
+| `orange` | Attention, en attente, alerte | En attente, À vérifier, En retard, Expiré bientôt |
+| `grey` | Inactif, brouillon, archivé | Brouillon, Archivé, Inactif, Fermé, Non défini |
+| `purple` | Premium, IA, spécial | Premium, VIP, IA, Automatisé |
+
+- Associer une icône si elle clarifie le statut (`check` pour validé, `x` pour rejeté, `clock` pour en cours, etc.).
 - Utiliser des libellés courts et clairs (« En cours », « Validé », « Brouillon »).
 
 ## À ne pas faire
 
 - Ne pas utiliser UiPill pour des comptages numériques — utiliser **UiBadge**.
 - Éviter des libellés trop longs qui déforment la pill.
-- Ne pas mélanger les conventions de couleurs (ex. vert pour erreur).
+- **Ne jamais choisir une couleur incohérente** avec le sens du statut (ex. vert pour une erreur, rouge pour un succès). C'est un bug.
 
 ## Notes d'intégration
 

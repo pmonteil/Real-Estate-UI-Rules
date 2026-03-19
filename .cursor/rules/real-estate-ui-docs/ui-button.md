@@ -73,6 +73,20 @@
 
 ## Bonnes pratiques
 
+- **Ordre des boutons** : dans toute zone d'actions (barre de sauvegarde, modale, formulaire, footer), le bouton **négatif/annulation/danger se place à gauche** et le bouton **positif/validation à droite**.
+
+```vue
+<!-- Bon : négatif à gauche, positif à droite -->
+<UiButton label="Annuler" variant="secondary" @click="cancel" />
+<UiButton label="Sauvegarder" variant="primary" @click="save" />
+
+<!-- Bon : action destructive avec variant error à gauche -->
+<UiButton label="Supprimer" variant="error" icon="trash" @click="remove" />
+<UiButton label="Conserver" variant="primary" @click="keep" />
+```
+
+- **Variant `error` obligatoire** pour toute action destructive ou dangereuse (supprimer, quitter sans sauvegarder, révoquer, réinitialiser). Ne jamais utiliser `secondary` ou `ghost` pour une action qui détruit des données.
+
 - **Un seul bouton primary par zone** (header, modal, formulaire) pour la clarté.
 - Utiliser `primary` pour l’action principale (sauvegarder, valider).
 - Utiliser `secondary` pour les actions annexes (annuler, retour).

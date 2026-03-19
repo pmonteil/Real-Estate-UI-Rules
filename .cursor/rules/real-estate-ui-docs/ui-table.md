@@ -116,14 +116,138 @@ interface ToolbarAction {
 </UiTable>
 ```
 
+## Boutons d'action de la toolbar — Guide
+
+Les boutons de la toolbar doivent être **logiques et utiles** au contexte du tableau. Ne jamais laisser les 6 boutons placeholder par défaut. Toujours personnaliser la toolbar avec des actions pertinentes.
+
+### Actions courantes et icônes associées
+
+| Action | Icône Tabler | Variant | Quand l'utiliser |
+|--------|-------------|---------|-----------------|
+| Ajouter / Créer | `plus` | `primary` | Créer un nouvel élément dans le tableau |
+| Exporter | `download` | `secondary` | Exporter les données (CSV, PDF) |
+| Importer | `upload` | `secondary` | Importer des données |
+| Rechercher | `search` | Champ `UiInput` | Recherche textuelle dans le tableau |
+| Rafraîchir | `refresh` | `ghost` | Recharger les données |
+| Paramètres colonnes | `columns` | `ghost` | Configurer les colonnes visibles |
+| Supprimer sélection | `trash` | `error` | Supprimer les éléments sélectionnés |
+| Dupliquer | `copy` | `secondary` | Dupliquer un ou plusieurs éléments |
+| Filtrer | `filter` | via `UiFilter` | Filtrer les données |
+
+### Exemple de toolbar adaptée au contexte
+
+```vue
+<UiTable :columns="columns" :rows="rows" title="Biens immobiliers">
+  <template #toolbar>
+    <UiFilter label="Statut" icon="circle-check" :active="!!filters.statut" @click="toggleFilter('statut')" />
+    <UiFilter label="Type" icon="home" :active="!!filters.type" @click="toggleFilter('type')" />
+    <UiInput v-model="search" placeholder="Rechercher un bien..." icon="search" />
+    <UiButton label="Exporter" variant="secondary" icon="download" size="sm" @click="exportData" />
+    <UiButton label="Ajouter un bien" variant="primary" icon="plus" size="sm" @click="create" />
+  </template>
+</UiTable>
+```
+
+## Actions de ligne — Guide
+
+Les boutons d'action dans la colonne `action` doivent être pertinents. Voici les actions courantes :
+
+| Action | Icône | Variant/Style | Usage |
+|--------|-------|--------------|-------|
+| Voir le détail | `eye` | défaut | Ouvrir le détail (drawer ou page) |
+| Modifier | `pencil` | défaut | Éditer l'élément |
+| Supprimer | `trash` | `variant: 'error'` | **Obligatoire** : toujours en variant error |
+| Menu contextuel | `dots-vertical` | `secondary: true` | Actions secondaires (dupliquer, archiver…) |
+| Télécharger | `download` | défaut | Télécharger un fichier lié |
+| Envoyer | `send` | défaut | Envoyer (email, notification) |
+
+```ts
+actions: [
+  { name: 'view', icon: 'eye' },
+  { name: 'edit', icon: 'pencil' },
+  { name: 'delete', icon: 'trash', variant: 'error' },
+]
+```
+
+## Colonnes de statut — Pills et couleurs sémantiques
+
+Quand une colonne représente un **état ou un statut**, toujours utiliser le type `pill` avec une couleur **sémantiquement logique**. Ne jamais choisir une couleur au hasard.
+
+### Mapping des couleurs par catégorie de statut
+
+| Catégorie | Couleur | Icône suggérée | Exemples de libellés |
+|-----------|---------|---------------|---------------------|
+| **Succès / Validé / Actif** | `green` | `check`, `circle-check` | Validé, Actif, Publié, Effectuée, Accepté, En ligne |
+| **Erreur / Rejeté / Échoué** | `red` | `x`, `alert-circle` | Rejeté, Échoué, Erreur, Annulé, Supprimé, Perdu |
+| **En cours / Info** | `blue` | `clock`, `loader` | En cours, En traitement, En révision, Planifié |
+| **Attention / En attente** | `orange` | `alert-triangle`, `clock` | En attente, À vérifier, Expiré bientôt, En retard |
+| **Brouillon / Neutre / Archivé** | `grey` | `archive`, `file` | Brouillon, Archivé, Inactif, Non défini, Fermé |
+| **Premium / IA / Spécial** | `purple` | `star`, `sparkles` | Premium, IA, VIP, Automatisé |
+
+### Exemple complet dans un tableau
+
+```ts
+function getStatusColor(status: string): string {
+  const map: Record<string, string> = {
+    'actif': 'green',
+    'en_cours': 'blue',
+    'en_attente': 'orange',
+    'rejete': 'red',
+    'brouillon': 'grey',
+    'archive': 'grey',
+    'effectuee': 'green',
+    'perdu': 'red',
+  };
+  return map[status] ?? 'grey';
+}
+
+function getStatusIcon(status: string): string {
+  const map: Record<string, string> = {
+    'actif': 'circle-check',
+    'en_cours': 'clock',
+    'en_attente': 'alert-triangle',
+    'rejete': 'x',
+    'brouillon': 'file',
+    'archive': 'archive',
+    'effectuee': 'check',
+    'perdu': 'x',
+  };
+  return map[status] ?? 'circle';
+}
+
+const columns = [
+  { key: 'reference', label: 'Réf.', icon: 'hash', width: '100px' },
+  { key: 'nom', label: 'Bien', type: 'link', to: 'detailRoute' },
+  { key: 'statut', label: 'Statut', type: 'pill', pillColor: 'statutColor', pillIcon: 'statutIcon', width: '140px' },
+  { key: 'actions', label: '', type: 'action', width: '100px', sortable: false,
+    actions: [
+      { name: 'view', icon: 'eye' },
+      { name: 'edit', icon: 'pencil' },
+      { name: 'delete', icon: 'trash', variant: 'error' },
+    ]
+  },
+];
+
+const rows = biens.map(b => ({
+  reference: b.ref,
+  nom: b.name,
+  detailRoute: `/biens/${b.id}`,
+  statut: getStatusLabel(b.status),
+  statutColor: getStatusColor(b.status),
+  statutIcon: getStatusIcon(b.status),
+}));
+```
+
 ## Bonnes pratiques
 
 - Toujours utiliser `UiTable` au lieu de `<table>` natif pour les données tabulaires.
 - Définir un `key` unique dans les données (`id` ou `reference`) pour les animations de transition.
 - Utiliser `width` sur les colonnes de taille fixe (actions, statuts, dates) pour un rendu stable.
-- Le type `pill` est idéal pour les colonnes de statut — mapper la couleur via `pillColor`.
+- **Toujours personnaliser la toolbar** avec des actions utiles et cohérentes au contexte. Ne jamais laisser les boutons par défaut.
+- **Toujours mapper les statuts avec des couleurs logiques** via le tableau de référence ci-dessus. Une couleur incohérente (vert pour une erreur, rouge pour un succès) est un bug.
 - Mettre `sortable: false` sur les colonnes d'action et les colonnes non-triables.
 - Préférer le slot `toolbar` pour des toolbars custom (filtres, recherche).
+- **Actions destructives** (supprimer) : toujours en `variant: 'error'` dans la colonne d'actions.
 
 ## À ne pas faire
 
@@ -132,6 +256,9 @@ interface ToolbarAction {
 - Ne pas oublier `row-clickable` si les lignes doivent être cliquables.
 - Ne pas mettre un `title` ET un slot `toolbar` vide — le header ne s'affiche que si l'un des deux est défini.
 - Ne pas utiliser des couleurs en dur pour les pills — toujours utiliser les noms de couleur du DS (`blue`, `green`, `red`, etc.).
+- **Ne jamais laisser la toolbar par défaut** avec les 6 boutons placeholder.
+- **Ne jamais choisir une couleur de pill au hasard** — suivre le mapping sémantique (vert = positif, rouge = négatif, etc.).
+- Ne pas mettre une action `delete` sans `variant: 'error'`.
 
 ## Notes d'intégration
 
