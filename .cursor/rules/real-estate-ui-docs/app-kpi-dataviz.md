@@ -1,490 +1,425 @@
 # KPI, Chiffres Clés & Data Visualization
 
-> Conventions pour la génération de cartes KPI, chiffres clés, graphiques et dashboards. L'objectif est un rendu **moderne, épuré et identitaire Septeo** — pas de génération générique multicolore.
+> Conventions pour la génération de dashboards modernes, interactifs, visuels et premium, alignés avec le Design System **Real Estate UI (Septeo)**.
+
+⚠️ IMPORTANT :
+Toutes les couleurs doivent provenir des variables `mapped → Context`.
+Aucune couleur hardcodée.
 
 ---
 
-## 1. Philosophie visuelle
+# 1. Philosophie globale
 
-### Principes fondamentaux
+Créer des dashboards :
 
-- **Sobriété chromatique** : les chiffres et labels sont en couleur **neutre** (`--text-headings`, `--text-body`). Jamais de chiffre en bleu, rouge, violet ou autre couleur vive.
-- **Accent orange Septeo** : la seule couleur vive autorisée sur les KPI est l'**orange Septeo** (`--brand-orange-400` / `--alias-accent-default`), utilisée exclusivement pour les sparklines, graphiques de fond, et éléments décoratifs visuels.
-- **Pas de multicolore** : une carte KPI = une seule teinte décorative (orange). Pas de bleu + vert + violet sur une même rangée de KPI.
-- **Pas de shadow** : délimiter les cartes KPI avec `border: 1px solid var(--border-default)` et `border-radius: 12px`. Jamais de `box-shadow`.
-- **Modernité** : les KPI doivent donner une impression de tableau de bord premium, pas de widget générique. Sparklines, micro-graphiques, et indicateurs de tendance sont encouragés.
-
-### Ce qu'on veut vs ce qu'on ne veut pas
-
-| Bien | Mal |
-|------|-----|
-| Chiffre en `--text-headings` (noir/gris foncé) | Chiffre en bleu, violet ou multicolore |
-| Sparkline en orange fondu derrière le chiffre | Pas de graphique, juste un chiffre seul |
-| Bordure fine `--border-default` | `box-shadow` sur les cartes KPI |
-| Indicateur de tendance discret (↑ +5%) | Gros badge coloré flashy |
-| Palette monochrome orange/neutre | Chaque KPI d'une couleur différente |
+- modernes (SaaS / fintech / AI tools)
+- très lisibles
+- interactifs
+- visuellement riches mais maîtrisés
+- arrondis et fluides (soft UI)
 
 ---
 
-## 2. Carte KPI — Pattern standard
+## Principes fondamentaux
 
-### Structure
-
-```
-┌─ KPI Card (border: 1px solid --border-default, radius: 12px) ─────┐
-│                                                                     │
-│  📊 Label du KPI (body-small, --text-body-secondary)               │
-│                                                                     │
-│  1 247          ░░▒▓█▓▒░░  ← sparkline orange en fond/à droite    │
-│  (H2, --text-headings)                                              │
-│                                                                     │
-│  ↑ 12.5% vs mois dernier  ← indicateur de tendance                │
-│  (caption, couleur contextuelle)                                    │
-│                                                                     │
-└─────────────────────────────────────────────────────────────────────┘
-```
-
-### Anatomie d'une carte KPI
-
-| Élément | Style | Détails |
-|---------|-------|---------|
-| **Container** | `border: 1px solid var(--border-default); border-radius: 12px; padding: 1.25rem;` | Fond blanc `var(--surface-default)`. Pas de shadow. |
-| **Label** | `font-size: 12px; color: var(--text-body-secondary); font-weight: 600;` | Texte court : "Biens actifs", "Visites ce mois", "CA mensuel" |
-| **Valeur principale** | `font-size: 28–32px; font-weight: 700; color: var(--text-headings);` | Toujours neutre/noir. Jamais coloré. |
-| **Sparkline** | SVG ou canvas, couleur `var(--brand-orange-400)` avec opacité 0.15–0.25 pour le fill | Positionnée à droite du chiffre ou en fond de carte. Area chart avec dégradé vertical (orange → transparent). |
-| **Indicateur de tendance** | `font-size: 12px;` | Flèche ↑/↓ + pourcentage. Vert si positif, rouge si négatif, gris si neutre. |
-| **Sous-label** | `font-size: 12px; color: var(--text-body-secondary);` | Contexte : "vs mois dernier", "ce trimestre", etc. |
-
-### Icône optionnelle dans le label
-
-Une icône Tabler peut accompagner le label pour identifier visuellement le KPI. L'icône utilise un **fond arrondi** en orange très léger.
-
-```scss
-.kpi-card__icon {
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  background: var(--surface-light-accent); // Orange très léger
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--alias-accent-default); // Orange Septeo
-}
-```
-
-### Code de référence
-
-```vue
-<div class="kpi-card">
-  <div class="kpi-card__header">
-    <div class="kpi-card__icon">
-      <IconHome :size="18" :stroke-width="1.5" />
-    </div>
-    <span class="kpi-card__label">Biens actifs</span>
-  </div>
-  <div class="kpi-card__body">
-    <span class="kpi-card__value">1 247</span>
-    <div class="kpi-card__sparkline">
-      <!-- SVG sparkline area chart en orange -->
-    </div>
-  </div>
-  <div class="kpi-card__trend kpi-card__trend--up">
-    <IconTrendingUp :size="14" />
-    <span>+12.5%</span>
-    <span class="kpi-card__trend-context">vs mois dernier</span>
-  </div>
-</div>
-```
-
-```scss
-.kpi-card {
-  background: var(--surface-default);
-  border: 1px solid var(--border-default);
-  border-radius: 12px;
-  padding: 1.25rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.kpi-card__label {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--text-body-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
-}
-
-.kpi-card__body {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 1rem;
-}
-
-.kpi-card__value {
-  font-size: 28px;
-  font-weight: 700;
-  color: var(--text-headings);
-  line-height: 1;
-}
-
-.kpi-card__sparkline {
-  width: 80px;
-  height: 32px;
-  flex-shrink: 0;
-}
-
-.kpi-card__sparkline svg {
-  width: 100%;
-  height: 100%;
-}
-
-.kpi-card__sparkline .sparkline-fill {
-  fill: var(--brand-orange-400);
-  opacity: 0.15;
-}
-
-.kpi-card__sparkline .sparkline-stroke {
-  stroke: var(--brand-orange-400);
-  stroke-width: 1.5;
-  fill: none;
-  opacity: 0.6;
-}
-
-.kpi-card__trend {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 12px;
-  font-weight: 500;
-}
-
-.kpi-card__trend--up {
-  color: var(--alias-success-default);
-}
-
-.kpi-card__trend--down {
-  color: var(--alias-error-default);
-}
-
-.kpi-card__trend--neutral {
-  color: var(--text-body-secondary);
-}
-
-.kpi-card__trend-context {
-  color: var(--text-body-secondary);
-  font-weight: 400;
-}
-```
+- **Lisibilité > décoratif**
+- **Graphiques au service de la donnée**
+- **Arrondi systématique**
+- **Hiérarchie forte**
+- **Densité maîtrisée**
 
 ---
 
-## 3. Rangée de KPI — Layout
+# 2. Couleurs (STRICT)
 
-Les cartes KPI se placent en **grille horizontale** en haut de page, entre le header et le contenu principal.
+## Source
+
+👉 UNIQUEMENT variables DS (`mapped → Context`)
+
+---
+
+## Autorisé
+
+- `--alias-accent-default` (orange Septeo)
+- bleu Septeo (si défini dans DS)
+- couleurs neutres (`--text-*`, `--border-*`, `--surface-*`)
+
+---
+
+## Interdit
+
+❌ HEX
+❌ couleurs arbitraires
+❌ multicolore non maîtrisé
+
+---
+
+## Règles
+
+- 1 couleur dominante par graphique
+- variations via opacity / gradients uniquement
+
+---
+
+# 3. KPI ROW (CRITIQUE)
+
+## Objectif
+
+👉 En desktop : **tous les KPI sur une seule ligne (priorité)**
+👉 Responsive : wrap autorisé si nécessaire
+
+---
+
+## Règles
+
+1. Toujours essayer de tenir sur 1 ligne
+2. Réduire largeur avant wrap
+3. Wrap uniquement en fallback
+
+---
+
+## Implémentation
 
 ```scss
 .kpi-row {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 1rem;
-  margin-bottom: 1.5rem;
 }
-```
-
-### Variantes de disposition
-
-| Nombre de KPIs | Layout recommandé |
-|----------------|-------------------|
-| 2–3 | `repeat(auto-fit, minmax(280px, 1fr))` |
-| 4 | `repeat(4, 1fr)` |
-| 5+ | `repeat(auto-fit, minmax(220px, 1fr))` avec wrap |
-
-### Intégration dans la page
-
-```
-┌─ UiContainersHeader ─────────────────────────────┐
-│  ← Tableau de bord         [Tabs]     [Actions]   │
-└──────────────────────────────────────────────────┘
-
-┌─ KPI Row (grille, max-width: 1400px) ────────────┐
-│ ┌─ KPI ──┐ ┌─ KPI ──┐ ┌─ KPI ──┐ ┌─ KPI ──┐    │
-│ │ Biens  │ │Visites │ │ CA     │ │ Leads  │    │
-│ │ 1 247  │ │ 89     │ │ 42.5k€ │ │ 34     │    │
-│ │ ↑12.5% │ │ ↓3.2%  │ │ ↑8.1%  │ │ ↑22%   │    │
-│ └────────┘ └────────┘ └────────┘ └────────┘    │
-└──────────────────────────────────────────────────┘
-
-┌─ Contenu (graphiques, tableaux...) ──────────────┐
-│  ...                                              │
-└──────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 4. Sparklines & Micro-graphiques
-
-### Sparkline area (derrière le chiffre)
-
-Le pattern principal : un petit area chart SVG en orange fondu, positionné à droite du chiffre ou en arrière-plan de la carte.
-
-```
-Trait :  stroke: var(--brand-orange-400), opacity: 0.6, stroke-width: 1.5
-Remplissage :  fill: dégradé vertical de var(--brand-orange-400) opacity 0.2 → transparent
-```
-
-### Sparkline comme fond de carte (variante immersive)
-
-Pour un effet plus premium, la sparkline peut occuper toute la largeur basse de la carte en fond, avec une opacité très faible.
+## Desktop prioritaire
 
 ```scss
-.kpi-card--immersive {
-  position: relative;
-  overflow: hidden;
-}
-
-.kpi-card--immersive .sparkline-bg {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 60%;
-  opacity: 0.08;
+@media (min-width: 1200px) {
+  .kpi-row {
+    grid-template-columns: repeat(4, 1fr);
+  }
 }
 ```
-
-### Couleurs des sparklines
-
-| Contexte | Couleur du trait | Couleur du fill |
-|----------|-----------------|-----------------|
-| **Standard (défaut)** | `var(--brand-orange-400)` opacity 0.6 | `var(--brand-orange-400)` opacity 0.15 |
-| **Tendance positive** | `var(--brand-orange-400)` opacity 0.6 | `var(--brand-orange-400)` opacity 0.15 |
-| **Tendance négative** | `var(--brand-orange-400)` opacity 0.4 | `var(--brand-orange-400)` opacity 0.08 |
-
-La sparkline reste **toujours en orange**, quelle que soit la tendance. C'est l'indicateur textuel (↑ vert / ↓ rouge) qui communique la direction, pas la couleur du graphique.
 
 ---
 
-## 5. Graphiques (Charts)
+## Ajustement
 
-### Règles générales
+- min-width possible : 220 → 200 → 180px
+- ensuite seulement wrap
 
-- **Palette monochrome** : utiliser des dégradés d'une seule teinte (orange Septeo) avec des variations d'opacité plutôt que plusieurs couleurs distinctes.
-- **Pas de multicolore par défaut** : si un graphique a plusieurs séries, utiliser des nuances d'orange (du `--brand-orange-100` au `--brand-orange-600`) ou un duo orange + gris neutre.
-- **Bordures, pas de shadows** : les conteneurs de graphique utilisent `border: 1px solid var(--border-default)` et `border-radius: 12px`.
-- **Labels discrets** : axes en `--text-body-secondary`, grille en `--border-default-light`.
+---
 
-### Palette de données pour graphiques
+## Interdictions
 
-Quand un graphique a plusieurs séries, utiliser dans cet ordre :
+❌ wrap immédiat
+❌ 2 KPI par ligne en desktop
+❌ cartes trop larges
+
+---
+
+# 4. KPI CARD (CRITIQUE)
+
+## Priorité
+
+👉 Le chiffre est **intouchable visuellement**
+
+- jamais caché
+- jamais superposé
+- toujours lisible
+
+---
+
+## Style
 
 ```scss
-// Série principale
-$chart-series-1: var(--brand-orange-400);  // Orange Septeo (plein)
-// Série secondaire
-$chart-series-2: var(--brand-orange-200);  // Orange clair
-// Série tertiaire (si besoin)
-$chart-series-3: var(--brand-grey-300);    // Gris neutre
-// Série quaternaire (rare)
-$chart-series-4: var(--brand-grey-200);    // Gris très clair
-```
-
-### Area Chart / Stream Chart
-
-Inspiré du pattern "Sales Report" : des couches empilées avec des dégradés monochromes.
-
-```scss
-.chart-area {
-  // Fond du graphique
+.kpi-card {
   background: var(--surface-default);
   border: 1px solid var(--border-default);
-  border-radius: 12px;
-  padding: 1.5rem;
+  border-radius: 16px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-width: 0;
+  transition: border-color 0.2s ease;
 }
 
-// Dégradé de fill pour area chart
-.chart-area-fill {
-  fill: url(#orangeGradient);
-}
-
-// SVG gradient
-// <linearGradient id="orangeGradient" x1="0" y1="0" x2="0" y2="1">
-//   <stop offset="0%" stop-color="var(--brand-orange-400)" stop-opacity="0.3" />
-//   <stop offset="100%" stop-color="var(--brand-orange-400)" stop-opacity="0.02" />
-// </linearGradient>
-```
-
-### Bar Chart
-
-```scss
-.bar-default {
-  fill: var(--brand-orange-400);
-  rx: 4px; // Bords arrondis en haut
-}
-
-.bar-secondary {
-  fill: var(--brand-orange-200);
-}
-
-.bar-hover {
-  fill: var(--brand-orange-500);
-}
-```
-
-### Donut / Ring Chart
-
-Pour les jauges de pourcentage (taux de conversion, objectifs atteints…) :
-
-```scss
-.donut-track {
-  stroke: var(--border-default);
-  stroke-width: 8;
-  fill: none;
-}
-
-.donut-value {
-  stroke: var(--brand-orange-400);
-  stroke-width: 8;
-  fill: none;
-  stroke-linecap: round;
-}
-
-.donut-label {
-  font-size: 28px;
-  font-weight: 700;
-  fill: var(--text-headings); // Neutre, jamais coloré
-}
-```
-
-### Axes et grille
-
-```scss
-.chart-axis-label {
-  font-size: 11px;
-  fill: var(--text-body-secondary);
-  font-weight: 400;
-}
-
-.chart-grid-line {
-  stroke: var(--border-default-light);
-  stroke-dasharray: 4 4; // Pointillés discrets
-}
-
-.chart-axis-line {
-  stroke: var(--border-default);
+.kpi-card:hover {
+  border-color: var(--border-strong);
 }
 ```
 
 ---
 
-## 6. Indicateurs de tendance
+## Règles
 
-### Format
-
-```
-↑ +12.5% vs mois dernier
-│   │        │
-│   │        └─ Contexte (gris, --text-body-secondary)
-│   └─ Valeur (colorée selon la direction)
-└─ Icône directionnelle
-```
-
-### Couleurs de tendance
-
-| Direction | Couleur | Icône Tabler |
-|-----------|---------|-------------|
-| Hausse (positif) | `var(--alias-success-default)` (vert) | `trending-up` |
-| Baisse (négatif) | `var(--alias-error-default)` (rouge) | `trending-down` |
-| Stable | `var(--text-body-secondary)` (gris) | `minus` |
-
-La couleur de tendance est la **seule** couleur non-orange autorisée dans un KPI. Elle s'applique uniquement à la petite ligne d'indicateur, jamais au chiffre principal ni au graphique.
+- toujours une sparkline
+- toujours un trend
+- jamais de KPI vide
 
 ---
 
-## 7. Dashboard — Layout complet
+# 5. SPARKLINE (CRITIQUE)
 
-### Structure type
+## Interdictions
+
+❌ derrière le texte
+❌ sur le chiffre
+❌ trop visible
+❌ élément dominant
+
+---
+
+## Placement autorisé
+
+### Option A (recommandé)
 
 ```
-┌─ KPI Row ───────────────────────────────────────────┐
-│  [KPI 1]  [KPI 2]  [KPI 3]  [KPI 4]               │
-└─────────────────────────────────────────────────────┘
-  gap: 1.5rem
-┌─ Charts Row (grid 2 colonnes) ──────────────────────┐
-│  ┌─ Chart principal ──────┐  ┌─ Chart secondaire ─┐ │
-│  │  Area chart / Bar chart │  │  Donut / Répartition│ │
-│  │  (2/3 de la largeur)   │  │  (1/3)             │ │
-│  └────────────────────────┘  └─────────────────────┘ │
-└─────────────────────────────────────────────────────┘
-  gap: 1.5rem
-┌─ Detail Row (grid 2 colonnes) ──────────────────────┐
-│  ┌─ Tableau récent ───────┐  ┌─ Line chart ────────┐ │
-│  │  UiTable (derniers     │  │  Évolution temporelle│ │
-│  │  éléments)             │  │                      │ │
-│  └────────────────────────┘  └──────────────────────┘ │
-└─────────────────────────────────────────────────────┘
+[ valeur ]     [ sparkline ]
 ```
+
+---
+
+### Option B (premium)
+
+```
+valeur
+trend
+
+sparkline en bas (zone dédiée)
+```
+
+---
+
+## Style
 
 ```scss
-.dashboard-charts {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 1.5rem;
+.sparkline {
+  opacity: 0.15;
 }
+```
 
-.dashboard-detail {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1.5rem;
-}
+---
 
+## Règle absolue
+
+👉 La sparkline ne doit jamais gêner la lecture
+
+---
+
+# 6. KPI STYLE
+
+- border-radius : 12–16px
+- pas de shadow
+- hover léger
+- icône possible (fond arrondi)
+
+---
+
+# 7. GRAPHIQUES (CHARTS)
+
+## Librairie obligatoire
+
+👉 ApexCharts uniquement
+
+---
+
+## Interdictions
+
+❌ Chart.js
+❌ graph statique
+❌ config par défaut
+
+---
+
+## Obligatoire
+
+- animation
+- hover
+- tooltip custom
+- transitions fluides
+
+---
+
+# 8. INTERACTIVITÉ
+
+Chaque graphique doit inclure :
+
+- animation d’entrée
+- hover dynamique
+- feedback visuel
+
+---
+
+## Animations
+
+- line → draw progressif
+- bar → montée
+- donut → remplissage
+
+---
+
+# 9. TYPES DE GRAPHIQUES
+
+---
+
+## Area Chart
+
+- curve smooth
+- gradient léger
+- highlight dernier point
+
+---
+
+## Bar Chart
+
+- border-radius 6px
+- spacing large
+- hover accentué
+
+---
+
+## Donut
+
+- épais
+- centré
+- animé
+
+---
+
+## Graphiques avancés (encouragés)
+
+- comparaison multi séries
+- highlight peak
+- overlays subtils
+- mini charts intégrés
+
+---
+
+# 10. EFFETS VISUELS
+
+Autorisés (subtils uniquement)
+
+---
+
+## Gradient
+
+- basé sur variables DS uniquement
+
+---
+
+## Glow léger
+
+```scss
+filter: blur(8px);
+opacity: 0.1;
+```
+
+---
+
+## Overlay
+
+- profondeur légère
+- jamais dominant
+
+---
+
+# 11. DATA STORYTELLING
+
+Un graphique doit :
+
+- raconter une évolution
+- montrer une tendance
+- mettre en avant un point clé
+
+---
+
+## Obligatoire
+
+- highlight (dernier point OU peak)
+
+---
+
+# 12. TOOLTIP
+
+## Style obligatoire
+
+- fond blanc
+- border fine
+- padding propre
+- typo DS
+
+---
+
+## Interdiction
+
+❌ tooltip par défaut ApexCharts
+
+---
+
+# 13. MICRO-INTERACTIONS
+
+Obligatoire :
+
+- hover KPI → border léger
+- hover chart → point actif
+- hover bar → intensité ↑
+
+---
+
+# 14. STRUCTURE CODE
+
+Toujours séparer :
+
+- data
+- options chart
+- styles
+
+---
+
+# 15. CHART CARD
+
+```scss
 .chart-card {
   background: var(--surface-default);
   border: 1px solid var(--border-default);
-  border-radius: 12px;
+  border-radius: 16px;
   padding: 1.5rem;
 }
-
-.chart-card__title {
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--text-headings);
-  margin-bottom: 1rem;
-}
 ```
 
 ---
 
-## 8. Interdictions
+# 16. AXES & GRILLE
 
-| Interdit | Faire à la place |
-|----------|-----------------|
-| Chiffre KPI coloré (bleu, vert, violet…) | Toujours `var(--text-headings)` (neutre) |
-| Chaque KPI d'une couleur différente | Toutes les sparklines en orange Septeo |
-| `box-shadow` sur les cartes KPI | `border: 1px solid var(--border-default)` |
-| Graphique multicolore (bleu + rouge + vert) | Nuances monochromes d'orange + gris neutre |
-| KPI sans sparkline ni élément visuel | Toujours ajouter un micro-graphique ou icône |
-| Placeholder générique "Chart" | Toujours générer un vrai SVG sparkline avec des données |
-| Fond gris sur les cartes KPI | `var(--surface-default)` (blanc) |
-| Gros badge coloré flashy pour la tendance | Petit indicateur discret (12px) avec flèche |
+- grille légère
+- labels discrets
+- jamais dominant
 
 ---
 
-## 9. Bibliothèques recommandées
+# 17. INTERDICTIONS GLOBALES
 
-Pour les graphiques, privilégier dans cet ordre :
+❌ KPI mal alignés
+❌ KPI sur plusieurs lignes (desktop sans contrainte)
+❌ sparkline intrusive
+❌ graph sans animation
+❌ tooltip par défaut
+❌ couleurs hors DS
+❌ rendu générique
 
-1. **SVG inline** pour les sparklines simples (quelques points, area fill)
-2. **Chart.js** ou **ApexCharts** pour les graphiques interactifs (bar, line, area, donut)
-3. **D3.js** uniquement si besoin de visualisations très custom
+---
 
-Configurer le thème du chart avec la palette orange Septeo :
+# 18. OBJECTIF FINAL
 
-```ts
-const chartTheme = {
-  colors: ['#ff6136', '#ffb199', '#e0e0e0', '#c0c0c0'],
-  grid: { borderColor: 'var(--border-default-light)' },
-  labels: { style: { colors: 'var(--text-body-secondary)', fontSize: '11px' } },
-};
-```
+Chaque dashboard doit ressembler à :
+
+- un produit SaaS premium
+- un outil AI analytics
+- une interface moderne type Stripe / Linear
+
+---
+
+👉 Jamais un template admin générique
+
+---

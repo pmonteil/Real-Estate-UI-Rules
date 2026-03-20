@@ -128,11 +128,71 @@ function openModal() {
 </script>
 ```
 
+## Quand utiliser UiPopup (obligatoire)
+
+**Toute action destructive ou dangereuse DOIT être précédée d'une popup de confirmation.** C'est une règle absolue.
+
+### Actions qui nécessitent une popup
+
+| Action | Variante | Titre suggéré | Icône |
+|--------|----------|---------------|-------|
+| Supprimer un élément | `negative` | "Supprimer [élément]" | `error` |
+| Annuler des modifications non sauvegardées | `negative` | "Annuler les modifications" | `warning` |
+| Réinitialiser une configuration | `negative` | "Réinitialiser la configuration" | `warning` |
+| Quitter une page avec des changements | `negative` | "Quitter sans sauvegarder ?" | `warning` |
+| Révoquer un accès / Désactiver un compte | `negative` | "Révoquer l'accès" | `error` |
+| Imposer des réglages à tous les utilisateurs | `positive` | "Imposer les préréglages" | `warning` |
+| Publier / Mettre en ligne (action impactante) | `positive` | "Publier [élément]" | `information` |
+| Archiver définitivement | `negative` | "Archiver [élément]" | `warning` |
+
+### Pattern standard
+
+```vue
+<!-- Le bouton déclenche la popup -->
+<UiButton
+  label="Supprimer"
+  variant="error"
+  icon="trash"
+  @click="showDeletePopup = true"
+/>
+
+<!-- La popup de confirmation -->
+<UiPopup
+  v-model="showDeletePopup"
+  variant="negative"
+  title="Supprimer ce bien"
+  description="Cette action est irréversible. Toutes les données associées seront supprimées."
+  icon-variant="error"
+  confirm-label="Supprimer"
+  confirm-icon="trash"
+  cancel-label="Annuler"
+  @confirm="handleDelete"
+/>
+```
+
+### Règle pour l'annulation de modifications
+
+Quand l'utilisateur clique sur "Annuler" dans une barre de sauvegarde et qu'il y a des modifications non sauvegardées, **toujours afficher une popup** :
+
+```vue
+<UiPopup
+  v-model="showCancelPopup"
+  variant="negative"
+  title="Annuler les modifications"
+  description="Vos modifications non sauvegardées seront perdues."
+  icon-variant="warning"
+  confirm-label="Oui, annuler"
+  cancel-label="Continuer l'édition"
+  @confirm="resetChanges"
+/>
+```
+
 ## Bonnes pratiques
 
-- **Utiliser pour les confirmations critiques** : Suppression, action irréversible, changement impactant plusieurs utilisateurs.
-- **Choisir la variante** : `positive` pour les confirmations neutres, `negative` pour les suppressions ou actions à risque.
-- **Labels clairs** : Adapter `confirmLabel` et `cancelLabel` au contexte (« Supprimer », « Annuler » plutôt que des labels génériques).
+- **Toute action destructive = popup obligatoire.** Pas d'exception.
+- **Choisir la variante** : `negative` pour les suppressions ou actions à risque, `positive` pour les confirmations neutres mais impactantes.
+- **Labels clairs et contextuels** : Adapter `confirmLabel` et `cancelLabel` au contexte (« Supprimer », « Réinitialiser » plutôt que des labels génériques comme « Confirmer »).
+- **Description explicite** : Toujours expliquer la conséquence de l'action dans `description` (« Cette action est irréversible », « Vos modifications seront perdues »).
 - **Ne pas bloquer sans issue** : Toujours proposer un moyen de fermer (bouton Annuler ou clic overlay) sauf si `persistent` est requis.
 - **Téléport** : Le composant utilise déjà `Teleport to="body"` pour éviter les problèmes de z-index.
 

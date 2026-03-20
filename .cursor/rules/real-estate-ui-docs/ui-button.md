@@ -86,6 +86,7 @@
 ```
 
 - **Variant `error` obligatoire** pour toute action destructive ou dangereuse (supprimer, quitter sans sauvegarder, révoquer, réinitialiser). Ne jamais utiliser `secondary` ou `ghost` pour une action qui détruit des données.
+- **Popup de confirmation obligatoire** : tout bouton `error` (action destructive) doit ouvrir une `UiPopup` de confirmation avant d'exécuter l'action. Ne jamais exécuter une action destructive directement au clic. Voir la doc `ui-popup.md`.
 
 - **Un seul bouton primary par zone** (header, modal, formulaire) pour la clarté.
 - Utiliser `primary` pour l’action principale (sauvegarder, valider).

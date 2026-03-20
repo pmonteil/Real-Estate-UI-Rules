@@ -445,26 +445,230 @@ La barre de sauvegarde doit s'étirer sur **100% de la largeur du contenu unique
 }
 ```
 
+### 8.8 Confirmation des Actions Destructives
+
+**Règle absolue** : toute action destructive ou dangereuse doit passer par une `UiPopup` de confirmation avant exécution. Cela inclut : suppression, annulation de modifications, réinitialisation, révocation, archivage définitif.
+
+```vue
+<!-- Pattern : bouton error → popup → action -->
+<UiButton label="Réinitialiser" variant="error" icon="refresh" @click="showResetPopup = true" />
+
+<UiPopup
+  v-model="showResetPopup"
+  variant="negative"
+  title="Réinitialiser la configuration"
+  description="Tous les paramètres seront remis aux valeurs par défaut."
+  icon-variant="warning"
+  confirm-label="Réinitialiser"
+  cancel-label="Annuler"
+  @confirm="resetConfig"
+/>
+```
+
 ---
 
 ## 9. Transitions et Animations
 
+**Règle fondamentale** : toute apparition, disparition ou changement de vue doit être **animé de manière smooth**. Aucun élément ne doit apparaître ou disparaître brutalement (cut). L'application doit donner une sensation fluide et professionnelle.
+
+### 9.1 Transitions de page (Vue Router)
+
+Chaque changement de page doit utiliser une transition `fade` ou `fade-slide`. Configurer dans le `<router-view>` :
+
+```vue
+<router-view v-slot="{ Component, route }">
+  <Transition name="page-fade" mode="out-in">
+    <component :is="Component" :key="route.path" />
+  </Transition>
+</router-view>
+```
+
 ```scss
-/* Standard */
-transition: all 0.2s ease;
-
-/* Slide up */
-@keyframes slideUp {
-  from { transform: translateY(100%); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
+.page-fade-enter-active,
+.page-fade-leave-active {
+  transition: opacity 0.2s ease, transform 0.2s ease;
 }
-
-/* Fade in up */
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+.page-fade-enter-from {
+  opacity: 0;
+  transform: translateY(8px);
+}
+.page-fade-leave-to {
+  opacity: 0;
 }
 ```
+
+### 9.2 Modales / Popups (UiPopup)
+
+Overlay en fade, contenu en scale + fade :
+
+```scss
+.ui-popup-fade-enter-active,
+.ui-popup-fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+.ui-popup-fade-enter-from,
+.ui-popup-fade-leave-to {
+  opacity: 0;
+}
+
+.ui-popup-scale-enter-active {
+  transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.ui-popup-scale-leave-active {
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+.ui-popup-scale-enter-from {
+  opacity: 0;
+  transform: scale(0.95) translateY(8px);
+}
+.ui-popup-scale-leave-to {
+  opacity: 0;
+  transform: scale(0.98);
+}
+```
+
+### 9.3 Drawers (Panneaux latéraux)
+
+Slide depuis la droite + overlay fade :
+
+```scss
+.drawer-enter-active {
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.drawer-leave-active {
+  transition: transform 0.2s ease-in;
+}
+.drawer-enter-from,
+.drawer-leave-to {
+  transform: translateX(100%);
+}
+```
+
+### 9.4 Barre de sauvegarde
+
+Slide up depuis le bas :
+
+```scss
+.save-bar-enter-active {
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+}
+.save-bar-leave-active {
+  transition: transform 0.2s ease-in, opacity 0.2s ease;
+}
+.save-bar-enter-from,
+.save-bar-leave-to {
+  transform: translateY(100%);
+  opacity: 0;
+}
+```
+
+### 9.5 Dropdowns (filtres, menus)
+
+Fade + léger translateY :
+
+```scss
+.dropdown-enter-active,
+.dropdown-leave-active {
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+.dropdown-enter-from,
+.dropdown-leave-to {
+  opacity: 0;
+  transform: translateY(-4px);
+}
+```
+
+### 9.6 Listes et tableaux
+
+Utiliser `<TransitionGroup>` pour les entrées/sorties de lignes :
+
+```vue
+<TransitionGroup name="list" tag="div">
+  <div v-for="item in items" :key="item.id">...</div>
+</TransitionGroup>
+```
+
+```scss
+.list-enter-active {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+.list-leave-active {
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.list-enter-from {
+  opacity: 0;
+  transform: translateY(10px);
+}
+.list-leave-to {
+  opacity: 0;
+  transform: translateX(-10px);
+}
+.list-move {
+  transition: transform 0.3s ease;
+}
+```
+
+### 9.7 Onglets (changement de contenu)
+
+Fade entre les contenus d'onglets :
+
+```vue
+<Transition name="tab-content" mode="out-in">
+  <div :key="activeTab">...</div>
+</Transition>
+```
+
+```scss
+.tab-content-enter-active,
+.tab-content-leave-active {
+  transition: opacity 0.15s ease;
+}
+.tab-content-enter-from,
+.tab-content-leave-to {
+  opacity: 0;
+}
+```
+
+### 9.8 Récapitulatif des durées
+
+| Élément | Durée entrée | Durée sortie | Easing |
+|---------|-------------|-------------|--------|
+| **Pages** | 200ms | 200ms | `ease` |
+| **Modales** | 250ms | 150ms | `cubic-bezier(0.34, 1.56, 0.64, 1)` (entrée bounce) |
+| **Drawers** | 300ms | 200ms | `cubic-bezier(0.16, 1, 0.3, 1)` (entrée smooth) |
+| **Save bar** | 300ms | 200ms | `cubic-bezier(0.16, 1, 0.3, 1)` |
+| **Dropdowns** | 150ms | 150ms | `ease` |
+| **Listes** | 300ms | 200ms | `ease` |
+| **Tabs** | 150ms | 150ms | `ease` |
+| **Hover/focus** | 150ms | 150ms | `ease` |
+
+### 9.9 Micro-interactions (hover, focus, états)
+
+```scss
+/* Transition standard pour tous les éléments interactifs */
+transition: all 0.15s ease;
+
+/* Boutons */
+button, .clickable {
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+}
+
+/* Cartes au hover */
+.card:hover {
+  border-color: var(--border-action);
+  transition: border-color 0.15s ease;
+}
+```
+
+### 9.10 Interdictions
+
+| Interdit | Faire à la place |
+|----------|-----------------|
+| Apparition/disparition sans animation (cut) | Toujours un `<Transition>` ou `transition` CSS |
+| Durée > 400ms (trop lent, sensation de lag) | 150–300ms max |
+| `transition: all` sur des éléments complexes (perf) | Cibler les propriétés (`opacity`, `transform`) |
+| Animation pendant un chargement de données | Montrer un skeleton/loader, animer à l'arrivée des données |
+| Changement de page sans transition | Toujours wrapper `<router-view>` dans un `<Transition>` |
 
 ---
 
